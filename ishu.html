@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Happy Birthday</title>
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <!-- Prevent landscape orientation on mobile -->
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-orientation" content="portrait" />
+    <meta name="apple-mobile-web-app-orientation" content="portrait" />
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Signika"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Love+Ya+Like+A+Sister&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+      :root {
+        --github-components-url: "https://raw.githubusercontent.com/Tejaspandey11/components/main";
+      }
+      body {
+        background-color: #000;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        min-height: 100vh;
+        transition: background 2s cubic-bezier(0.4, 0, 0.2, 1),
+          background-color 2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      /* Door styles */
+      .door-container {
+        perspective: 1000px;
+        cursor: pointer;
+        width: 300px;
+        height: 450px;
+        display: flex;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 10px;
+        overflow: hidden;
+        z-index: 100;
+        background: none;
+      }
+      .door-panel {
+        background-color: #5c4033;
+        border: 2px solid #7a523a;
+        flex: 1;
+        transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+      }
+      .door-panel.left {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        transform-origin: left center;
+      }
+      .door-panel.right {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        transform-origin: right center;
+      }
+      .door-handle {
+        width: 20px;
+        height: 20px;
+        background-color: #8b4513;
+        border-radius: 50%;
+        position: absolute;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      }
+      .door-panel.left .door-handle {
+        right: 15px;
+      }
+      .door-panel.right .door-handle {
+        left: 15px;
+      }
+      .door-panel.open-left {
+        transform: rotateY(-100deg);
+        opacity: 0;
+      }
+      .door-panel.open-right {
+        transform: rotateY(100deg);
+        opacity: 0;
+      }
+      .door-container.hide {
+        display: none !important;
+      }
+      /* Message box for alerts */
+      .message-box {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #333;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        display: none;
+        text-align: center;
+      }
+      .message-box button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      /* Main page styles */
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -2;
+        transition: filter 2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+        z-index: 10;
+      }
+      .container {
+        display: none;
+        position: relative;
+        z-index: 1;
+        transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .container.fade-out {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .navbar-fixed-bottom {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: transparent;
+        z-index: 2;
+        transition: opacity 1s;
+      }
+      .centered-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 100%;
+      }
+      #wish_message,
+      #story {
+        display: none;
+      }
+      .message {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        display: none;
+        z-index: 5;
+        pointer-events: none;
+      }
+      .card {
+        width: 250px;
+        height: 300px;
+        border-radius: 30px;
+        background: #212121;
+        box-shadow: 15px 15px 30px #191919, -15px -15px 30px #3c3c3c;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        box-sizing: border-box;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+      }
+      .message p {
+        font-family: "Signika", sans-serif;
+        font-size: 1.8em;
+        text-transform: uppercase;
+        color: #c4515c;
+        text-shadow: 2px 2px 2px #fff;
+        font-weight: bold;
+        line-height: 1.4;
+      }
+      .btn-primary {
+        border-radius: 25px;
+        padding: 12px 30px;
+        text-transform: uppercase;
+        font-family: "Comfortaa", cursive;
+        font-weight: 700;
+        font-size: 1.2em;
+        color: #fff;
+        background: linear-gradient(145deg, #ff99cc, #ff66b2);
+        border: none;
+        box-shadow: 0 5px 15px rgba(255, 102, 178, 0.4);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        letter-spacing: 1px;
+      }
+      .btn-primary:hover {
+        background: linear-gradient(145deg, #ff66b2, #ff99cc);
+        box-shadow: 0 8px 20px rgba(255, 102, 178, 0.6),
+          0 0 25px rgba(255, 102, 178, 0.8);
+        transform: translateY(-3px);
+      }
+      .btn-primary.disabled,
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        background: linear-gradient(145deg, #e0b0d0, #cc88b0);
+        box-shadow: none;
+        transform: translateY(0);
+      }
+      audio {
+        display: none;
+      }
+      #decoration-container {
+        font-family: "Inter", sans-serif;
+        color: #333;
+      }
+      @keyframes pulse-glow {
+        from {
+          filter: drop-shadow(0 0 4px rgba(255, 255, 0, 0.8))
+            drop-shadow(0 0 8px rgba(255, 255, 0, 0.6));
+        }
+        to {
+          filter: drop-shadow(0 0 8px rgba(255, 255, 0, 1))
+            drop-shadow(0 0 16px rgba(255, 255, 0, 0.8));
+        }
+      }
+      .lamp-glow {
+        animation: pulse-glow 2s infinite alternate;
+      }
+      .lamp-svg .lamp-circle-bg {
+        fill: var(--lamp-color-circle-bg);
+      }
+      .lamp-svg .lamp-body {
+        fill: var(--lamp-color-body);
+      }
+      .lamp-svg .lamp-small-circle {
+        fill: var(--lamp-color-small-circle);
+      }
+      .lamp-svg .lamp-star-path {
+        fill: var(--lamp-color-star-path);
+      }
+      .lamp-svg .lamp-square {
+        fill: var(--lamp-color-square);
+      }
+      .lamp-svg line,
+      .lamp-svg circle[r="1.069"] {
+        stroke: #4c241d;
+      }
+      @keyframes breathing-fire {
+        0% {
+          transform: translateX(-50%) scaleY(0.8) scaleX(0.9);
+          opacity: 0.8;
+        }
+        50% {
+          transform: translateX(-50%) scaleY(1.1) scaleX(1.1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateX(-50%) scaleY(0.8) scaleX(0.9);
+          opacity: 0.8;
+        }
+      }
+      /* Message page styles */
+      .special-message-bg {
+        background-color: #ffc5c5 !important;
+        font-family: "Dancing Script", cursive !important;
+        transition: background 2s cubic-bezier(0.4, 0, 0.2, 1),
+          background-color 2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .special-message-card {
+        width: 90%;
+        max-width: 600px;
+        min-height: 500px;
+        padding: 20px;
+        border-radius: 40px;
+        background: radial-gradient(circle at center, #ffebf0, #ffdeba);
+        box-shadow: inset 0px 0px 15px rgba(255, 200, 210, 0.6),
+          8px 8px 18px rgba(180, 100, 100, 0.2),
+          -8px -8px 18px rgba(255, 230, 240, 0.4);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        overflow: hidden;
+        transition: opacity 1s ease-out;
+        margin: 0 auto;
+      }
+      .special-message-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .special-message-paragraph {
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        position: absolute;
+        width: 90%;
+        color: #4a0e3c;
+        font-size: 1.5rem;
+        line-height: 1.5;
+        font-weight: 700;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .special-message-paragraph.show {
+        opacity: 1;
+      }
+      @media (min-width: 640px) {
+        .special-message-card {
+          width: 380px;
+          min-height: 450px;
+        }
+        .special-message-paragraph {
+          font-size: 1.8rem;
+          color: #4a0e3c;
+        }
+      }
+      .special-btn-primary {
+        border-radius: 25px;
+        padding: 12px 30px;
+        text-transform: uppercase;
+        font-family: "Comfortaa", cursive;
+        font-weight: 700;
+        font-size: 1.2em;
+        color: #fff;
+        background: linear-gradient(145deg, #ff99cc, #ff66b2);
+        border: none;
+        box-shadow: 0 5px 15px rgba(255, 102, 178, 0.4);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        letter-spacing: 1px;
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: none;
+      }
+      .special-btn-primary:hover {
+        background: linear-gradient(145deg, #ff66b2, #ff99cc);
+        box-shadow: 0 8px 20px rgba(255, 102, 178, 0.6),
+          0 0 25px rgba(255, 102, 178, 0.8);
+        transform: translate(-50%, -3px);
+      }
+      .special-btn-primary.disabled,
+      .special-btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        background: linear-gradient(145deg, #e0b0d0, #cc88b0);
+        box-shadow: none;
+        transform: translateX(-50%);
+      }
+      #final-message {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        font-size: 5em;
+        color: #ff6b6b;
+        text-shadow: 0 0 10px #ffd700;
+        display: none;
+        z-index: 10;
+        text-align: center;
+        width: 100%;
+        font-family: "Love Ya Like A Sister", cursive;
+        animation: pop 0.5s forwards, pulsate 1.5s infinite alternate 0.5s;
+      }
+      @keyframes pop {
+        from {
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 0;
+        }
+        to {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 1;
+        }
+      }
+      @keyframes pulsate {
+        from {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 0.9;
+        }
+        to {
+          transform: translate(-50%, -50%) scale(1.03);
+          opacity: 1;
+        }
+      }
+      @media screen and (orientation: landscape) and (max-width: 900px) {
+        body::before {
+          content: "Please rotate your device to portrait mode for the best experience.";
+          position: fixed;
+          z-index: 9999;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: #ffc5c5;
+          color: #4a0e3c;
+          font-size: 2em;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          font-family: "Dancing Script", cursive;
+        }
+        #doorContainer,
+        .container,
+        #special-message-section,
+        canvas,
+        .loading,
+        #decoration-container,
+        #bulb-row,
+        .navbar-fixed-bottom {
+          display: none !important;
+        }
+      }
+      @media (orientation: portrait) {
+        #cake-container {
+          width: 95vw !important;
+          max-width: 420px !important;
+          min-width: 220px !important;
+          left: 50% !important;
+          transform: translate(-50%, -50%) !important;
+        }
+        #cake-container img {
+          width: 100% !important;
+          height: auto !important;
+          display: block;
+        }
+        .candle {
+          min-width: 8px !important;
+          max-width: 14px !important;
+          width: 10px !important;
+          height: 50px !important;
+        }
+      }
+      /* Make sure candles are positioned relative to the cake image */
+      #cake-container {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        display: block !important;
+        width: clamp(200px, 40vw, 400px);
+        height: auto;
+        text-align: center;
+      }
+      #cake-container img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .candle {
+        position: absolute !important;
+        /* The left/top values will be set by JS, but ensure transform is correct */
+        transform: translateX(-50%) !important;
+        z-index: 5;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Door Animation -->
+    <div class="door-container" id="doorContainer">
+      <div class="door-panel left" id="leftDoorPanel">
+        <div class="door-handle"></div>
+      </div>
+      <div class="door-panel right" id="rightDoorPanel">
+        <div class="door-handle"></div>
+      </div>
+    </div>
+    <div id="messageBox" class="message-box">
+      <p id="messageText"></p>
+      <button id="messageBoxClose">OK</button>
+    </div>
+    <!-- Main Birthday Page -->
+    <canvas id="backgroundCanvas"></canvas>
+    <div class="loading"></div>
+    <audio class="song" id="hbdMusic" loop>
+      <source
+        src="https://raw.githubusercontent.com/Tejaspandey11/components/main/hbd.mp3"
+      />
+    </audio>
+    <div class="container" style="display: none">
+      <div id="bulb-row" style="text-align: center"></div>
+      <div
+        id="decoration-container"
+        style="display: none"
+        class="absolute top-0 left-0 w-full h-[180px] z-10 overflow-visible"
+      >
+        <svg
+          id="arc-svg"
+          class="absolute top-0 left-0 w-full h-full"
+          viewBox="0 0 1000 150"
+          preserveAspectRatio="none"
+        >
+          <path
+            id="hanging-arc"
+            d="M 0 30 Q 500 150 1000 30"
+            fill="none"
+            stroke="#4a4a4a"
+            stroke-width="2"
+          ></path>
+        </svg>
+        <div id="lamps-container" class="relative w-full h-full"></div>
+      </div>
+      <div class="message"></div>
+      <div class="navbar-fixed-bottom">
+        <div class="centered-buttons">
+          <button class="btn-primary" id="turn_on">
+            HAPPY BIRTHDAYYYY!!!!!!!
+          </button>
+          <!-- <button class="btn-primary" id="wish_message">Happy Birthday</button> -->
+          <button class="btn-primary" id="story">A message for you</button>
+        </div>
+      </div>
+    </div>
+    <!-- Special Message Page (hidden initially) -->
+    <div id="special-message-section" style="display: none">
+      <div class="special-message-card">
+        <div class="special-message-container" id="special-message-container">
+          <!-- Paragraphs will be injected here -->
+        </div>
+      </div>
+      <button id="love-you-btn" class="special-btn-primary">I LOVE YOU</button>
+      <h1 id="final-message">I LOVE YOU TOO</h1>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+      // Door logic
+      function showMessageBox(message) {
+        const messageBox = document.getElementById("messageBox");
+        const messageText = document.getElementById("messageText");
+        messageText.textContent = message;
+        messageBox.style.display = "block";
+      }
+      document
+        .getElementById("messageBoxClose")
+        .addEventListener("click", () => {
+          document.getElementById("messageBox").style.display = "none";
+        });
+      let doorSoundNoise, doorSoundFilter, doorSoundLFO;
+      function playDoorSound() {
+        if (Tone.context.state !== "running") Tone.start();
+        if (!doorSoundNoise) {
+          doorSoundNoise = new Tone.NoiseSynth({
+            noise: { type: "brown" },
+            envelope: { attack: 0.1, decay: 0.5, sustain: 0.1, release: 0.8 },
+          }).toDestination();
+          doorSoundFilter = new Tone.Filter(400, "lowpass").toDestination();
+          doorSoundNoise.connect(doorSoundFilter);
+          doorSoundLFO = new Tone.LFO("2hz", 200, 800);
+          doorSoundLFO.connect(doorSoundFilter.frequency);
+        }
+        doorSoundLFO.start();
+        doorSoundNoise.triggerAttackRelease("1.5s");
+        setTimeout(() => {
+          doorSoundLFO.stop();
+        }, 1500);
+      }
+      function playBirthdayMusic() {
+        const audio = document.getElementById("hbdMusic");
+        if (audio && audio.paused) {
+          audio.play();
+          audio.loop = true;
+        }
+      }
+      document.addEventListener("DOMContentLoaded", () => {
+        const doorContainer = document.getElementById("doorContainer");
+        const leftDoorPanel = document.getElementById("leftDoorPanel");
+        const rightDoorPanel = document.getElementById("rightDoorPanel");
+        doorContainer.addEventListener("click", () => {
+          playDoorSound();
+          playBirthdayMusic();
+          leftDoorPanel.classList.add("open-left");
+          rightDoorPanel.classList.add("open-right");
+          setTimeout(() => {
+            doorContainer.classList.add("hide");
+            document.querySelector(".container").style.display = "";
+          }, 1200);
+        });
+
+        // Add this function to request full screen and landscape mode
+        function requestFullScreenOnly() {
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+          } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+          } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen(
+              Element.ALLOW_KEYBOARD_INPUT
+            );
+          } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+          }
+        }
+
+        // Call the function when the "HAPPY BIRTHDAYYYY!!!!!!!" button is clicked
+        const turnOnBtn = document.getElementById("turn_on");
+        if (turnOnBtn) {
+          turnOnBtn.addEventListener("click", () => {
+            requestFullScreenOnly();
+            // ...the rest of your click logic is handled by jQuery below...
+          });
+        }
+      });
+
+      // Main Birthday Page logic
+      $(document).ready(function () {
+        const $container = $(".container"),
+          $loading = $(".loading"),
+          $bulbRow = $("#bulb-row"),
+          $turnOnBtn = $("#turn_on"),
+          $storyBtn = $("#story"),
+          $audio = $("#hbdMusic")[0],
+          $decoration = $("#decoration-container"),
+          $bottomNavbar = $(".navbar-fixed-bottom");
+        let currentMessageIndex = 0;
+        const messageDisplayDuration = 5000;
+        let cakeButtonShown = false;
+        $bulbRow.empty();
+        ["yellow", "red", "blue", "green", "pink", "orange"].forEach(
+          (color) => {
+            $bulbRow.append(
+              `<div class="bulb-holder"><div class="bulb" id="bulb_${color}"></div></div>`
+            );
+          }
+        );
+        const backgroundCanvas = document.getElementById("backgroundCanvas");
+        function resizeCanvases() {
+          backgroundCanvas.width = window.innerWidth;
+          backgroundCanvas.height = window.innerHeight;
+        }
+        resizeCanvases();
+        $(window).on("resize", resizeCanvases);
+        setTimeout(() => {
+          $loading.fadeOut("slow", () => {
+            $container.fadeIn("slow");
+          });
+        }, 2000);
+        function disableButton($btn) {
+          $btn.prop("disabled", true).addClass("disabled");
+        }
+        function triggerConfetti() {
+          const end = Date.now() + 3000,
+            colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
+          (function frame() {
+            if (Date.now() > end) return;
+            confetti({
+              particleCount: 2,
+              angle: 60,
+              spread: 55,
+              startVelocity: 60,
+              origin: { x: 0, y: 0.5 },
+              colors,
+            });
+            confetti({
+              particleCount: 2,
+              angle: 120,
+              spread: 55,
+              startVelocity: 60,
+              origin: { x: 1, y: 0.5 },
+              colors,
+            });
+            requestAnimationFrame(frame);
+          })();
+        }
+        let activeLamps = 0,
+          maxLamps = 4; // Reduced number of flying lamps for more disperse effect
+        function createFlyingLamps() {
+          if (activeLamps >= maxLamps) return;
+          activeLamps++;
+          const lampWidth = Math.random() * 80 + 70;
+          // Make lamps more disperse by spreading their horizontal start positions
+          const leftPercent = [10, 30, 60, 80][activeLamps - 1] || (Math.random() * 80 + 5);
+          const $lamp = $("<img>")
+            .attr(
+              "src",
+              "https://raw.githubusercontent.com/Tejaspandey11/components/main/lamps.png"
+            )
+            .css({
+              position: "fixed",
+              bottom: "-250px",
+              left: `${leftPercent}vw`,
+              width: `${lampWidth}px`,
+              height: "auto",
+              zIndex: "3",
+              opacity: 0,
+              pointerEvents: "none",
+            })
+            .appendTo("body");
+          const animationDuration = Math.random() * 8000 + 12000,
+            driftAmount = Math.random() * 400 - 200;
+          $lamp.delay(Math.random() * 800).animate(
+            { opacity: 1, bottom: "100%", left: `+=${driftAmount}px` },
+            {
+              duration: animationDuration,
+              easing: "linear",
+              complete: function () {
+                $(this).remove();
+                activeLamps--;
+              },
+            }
+          );
+          let currentLeft = parseFloat($lamp.css("left")),
+            oscillateDuration = 2000 + Math.random() * 1000,
+            oscillateAmount = Math.random() * 30 - 15;
+          function oscillate() {
+            if ($lamp.is(":animated")) {
+              $lamp.animate(
+                { left: currentLeft + oscillateAmount },
+                oscillateDuration,
+                "easeOutSine",
+                function () {
+                  currentLeft = parseFloat($(this).css("left"));
+                  oscillateAmount *= -1;
+                  oscillate();
+                }
+              );
+            }
+          }
+          oscillate();
+        }
+        function displayMessages() {
+          // Remove cake and fade out main page
+          $("#cake-container").fadeOut(1200, function () {
+            $(this).remove();
+          });
+          $container.addClass("fade-out");
+          $("canvas").css("filter", "blur(8px) brightness(1.2)");
+          // Smoothly change background color
+          $("body").css({
+            transition:
+              "background 2s cubic-bezier(.4,0,.2,1), background-color 2s cubic-bezier(.4,0,.2,1)",
+            background: "linear-gradient(135deg, #ffc5c5 0%, #ffe5e5 100%)",
+          });
+          setTimeout(() => {
+            $container.hide();
+            showSpecialMessage();
+          }, 1700);
+        }
+        function changeToCakeButton() {
+          const $flyLampsBtn = $("#fly-lamps-btn");
+          if ($flyLampsBtn.length) {
+            $flyLampsBtn.fadeOut("slow", function () {
+              $(this).remove();
+              const $cakeButton = $("<button>")
+                .attr("class", "btn-primary")
+                .attr("id", "bring-cake-btn")
+                .text("Bring the Tasty Cake")
+                .click(function () {
+                  $(this).fadeOut("slow", function () {
+                    $(this).remove();
+                    const $cakeContainer = $("<div>")
+                      .attr("id", "cake-container")
+                      .css({
+                        position: "fixed",
+                        left: "50%",
+                        top: "100%",
+                        transform: "translate(-50%, 0)",
+                        zIndex: "4",
+                        display: "none",
+                        width: "clamp(200px, 40vw, 400px)",
+                        height: "auto",
+                        textAlign: "center",
+                      })
+                      .appendTo("body");
+                    const $cakeImage = $("<img>")
+                      .attr(
+                        "src",
+                        "https://raw.githubusercontent.com/Tejaspandey11/components/main/cakeWithoutCandle.png"
+                      )
+                      .css({ width: "100%", height: "auto", display: "block" })
+                      .appendTo($cakeContainer);
+                    const candlePositions = [
+                      { left: "20%", top: "5%" },
+                      { left: "35%", top: "2%" },
+                      { left: "50%", top: "0%" },
+                      { left: "65%", top: "2%" },
+                      { left: "80%", top: "5%" },
+                    ];
+                    candlePositions.forEach((pos, index) => {
+                      const $candle = $("<div>")
+                        .addClass("candle")
+                        .attr("id", `candle-${index}`)
+                        .css({
+                          position: "absolute",
+                          left: pos.left,
+                          top: pos.top,
+                          transform: "translateX(-50%)",
+                          width: "10px",
+                          height: "60px",
+                          backgroundColor: `hsl(${index * 60}, 70%, 70%)`,
+                          borderRadius: "2px 2px 0 0",
+                          display: "none",
+                          zIndex: "5",
+                        })
+                        .appendTo($cakeContainer);
+                      const $fire = $("<div>")
+                        .addClass("fire")
+                        .css({
+                          position: "absolute",
+                          top: "-15px",
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          width: "15px",
+                          height: "25px",
+                          background:
+                            "radial-gradient(ellipse at center, #FFD700 0%, #FF8C00 50%, transparent 70%)",
+                          borderRadius: "50% 50% 30% 30%",
+                          display: "none",
+                          filter: "drop-shadow(0 0 8px orange)",
+                          animation:
+                            "breathing-fire 1.5s infinite alternate ease-in-out",
+                        })
+                        .appendTo($candle);
+                    });
+                    $cakeContainer
+                      .css("display", "block")
+                      .animate(
+                        { top: "50%", transform: "translate(-50%, -50%)" },
+                        1500,
+                        "swing",
+                        function () {
+                          const $lightCandleBtn = $("<button>")
+                            .attr("class", "btn-primary")
+                            .attr("id", "light-candle-btn")
+                            .text("Light Candles")
+                            .click(function () {
+                              $(this).fadeOut("slow", function () {
+                                $(this).remove();
+                                $(".candle").each(function (index) {
+                                  const $currentCandle = $(this);
+                                  $currentCandle
+                                    .delay(index * 200)
+                                    .fadeIn(500, function () {
+                                      $currentCandle.find(".fire").fadeIn(300);
+                                    });
+                                });
+                                const totalCandleLightTime =
+                                  $(".candle").length * 200 + 500 + 1000;
+                                setTimeout(() => {
+                                  const $letsTalkBtn = $("<button>")
+                                    .attr("class", "btn-primary")
+                                    .attr("id", "talk-button")
+                                    .text("Let's Talk")
+                                    .click(function () {
+                                      displayMessages();
+                                    });
+                                  $bottomNavbar
+                                    .find(".centered-buttons")
+                                    .append($letsTalkBtn.hide().fadeIn("slow"));
+                                }, totalCandleLightTime);
+                              });
+                            });
+                          $bottomNavbar
+                            .find(".centered-buttons")
+                            .append($lightCandleBtn.hide().fadeIn("slow"));
+                        }
+                      );
+                  });
+                });
+              $bottomNavbar
+                .find(".centered-buttons")
+                .append($cakeButton.hide().fadeIn("slow"));
+            });
+          }
+        }
+        $turnOnBtn.click(function () {
+          const $thisButton = $(this);
+          disableButton($thisButton);
+          if (document.documentElement.requestFullscreen)
+            document.documentElement.requestFullscreen();
+          else if (document.documentElement.mozRequestFullScreen)
+            document.documentElement.mozRequestFullScreen();
+          else if (document.documentElement.webkitRequestFullscreen)
+            document.documentElement.webkitRequestFullscreen();
+          else if (document.documentElement.msRequestFullscreen)
+            document.documentElement.msRequestFullscreen();
+          $("body").css("background-color", "#100000");
+          triggerConfetti();
+          $bulbRow.hide();
+          $decoration.fadeIn(1500, function () {
+            renderLamps();
+          });
+          setTimeout(() => {
+            $thisButton.fadeOut("slow", function () {
+              // No Play Music button
+              const $flyLampsBtn = $("<button>")
+                .attr("class", "btn-primary")
+                .attr("id", "fly-lamps-btn")
+                .text("Surprise!")
+                .click(function () {
+                  for (let i = 0; i < maxLamps; i++) {
+                    createFlyingLamps();
+                  }
+                  $(this).prop("disabled", true).text("Yayyyy!!");
+                  if (!cakeButtonShown) {
+                    setTimeout(() => {
+                      changeToCakeButton();
+                      cakeButtonShown = true;
+                    }, 10000);
+                  }
+                });
+              $bottomNavbar
+                .find(".centered-buttons")
+                .append($flyLampsBtn.hide().fadeIn("slow"));
+            });
+          }, 3500);
+        });
+        const arcPath = document.getElementById("hanging-arc"),
+          lampsContainer = document.getElementById("lamps-container"),
+          numberOfLamps = 10,
+          lampSize = 60;
+        const fullSvgTemplate = `<svg class="lamp-svg" viewBox="0 0 64 64" width="${lampSize}" height="${lampSize}" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.128"></g><g id="SVGRepo_iconCarrier"><title>decoration</title><g id="decoration"><line x1="9" y1="4" x2="9" y2="6" style="fill:none;stroke:#4c241d;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px"></line><line x1="9" y1="10" x2="9" y2="12" style="fill:none;stroke:#4c241d;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px"></line><line x1="5" y1="8" x2="7" y2="8" style="fill:none;stroke:#4c241d;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px"></line><line x1="11" y1="8" x2="13" y2="8" style="fill:none;stroke:#4c241d;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px"></line><circle cx="38.5" cy="36.5" r="21.5" class="lamp-circle-bg"></circle><path d="M32,52.106h0a5,5,0,0,1,5,5v6a0,0,0,0,1,0,0H27a0,0,0,0,1,0,0v-6a5,5,0,0,1,5-5Z" class="lamp-body"></path><line x1="34" y1="60.106" x2="34" y2="63.106" style="fill:none;stroke:#4c241d;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px"></line><line x1="30" y1="57" x2="30" y2="63" style="fill:none;stroke:#4c241d;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px"></line><circle cx="32" cy="50.106" r="2" class="lamp-small-circle"></circle><line x1="32" y1="48.106" x2="32" y2="41.106" style="fill:none;stroke:#4c241d;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px"></line><path d="M54.574,23.007a5.652,5.652,0,0,0-7.985,0l-1.866,1.867-4.238-4.238,2.144-2.143a5.84,5.84,0,0,0-.25-8.236,5.839,5.839,0,0,0-8.235-.25L32,12.151l-2.144-2.144a5.836,5.836,0,0,0-8.234.25,6.164,6.164,0,0,0-1.83,4.108,5.45,5.45,0,0,0,1.58,4.128l2.143,2.143L19.5,24.651l-1.644-1.644a5.644,5.644,0,1,0,0,7.986L19.5,29.349l4.014,4.014-2.142,2.142a5.449,5.449,0,0,0-1.58,4.127,6.278,6.278,0,0,0,5.937,5.938c.083,0,.164.005.245.005a5.423,5.423,0,0,0,3.882-1.585L32,41.847l2.144,2.143a5.423,5.423,0,0,0,3.882,1.585c.081,0,.162,0,.245-.005a6.169,6.169,0,0,0,4.108-1.83,5.838,5.838,0,0,0,.25-8.235l-2.143-2.142,4.237-4.237,1.866,1.867a5.647,5.647,0,0,0,7.985-7.986ZM36.265,12.128a2.844,2.844,0,0,1,3.993.25,2.845,2.845,0,0,1,.25,3.993l-2.144,2.144-4.243-4.243ZM32,16.393l4.243,4.243L32,24.878l-4.243-4.242Zm-8.507-.021a2.844,2.844,0,0,1,.25-3.994,2.843,2.843,0,0,1,3.992-.25l2.144,2.144-4.243,4.243Zm-7.758,12.5a2.646,2.646,0,1,1,0-3.744L17.607,27ZM21.393,27l4.243-4.243L29.879,27l-4.244,4.243ZM32,37.607l-4.244-4.244L32,29.12l4.244,4.243Zm-4.265,4.262a2.453,2.453,0,0,1-1.883.7A3.276,3.276,0,0,1,22.79,39.51a2.479,2.479,0,0,1,.7-1.884l2.142-2.142,4.243,4.243Zm12.773-4.243a2.845,2.845,0,0,1-.25,3.993,3.172,3.172,0,0,1-2.111.953,2.467,2.467,0,0,1-1.882-.7l-2.143-2.142,4.243-4.243Zm-2.143-6.384L34.121,27l4.243-4.242L42.606,27Zm14.088-2.37a2.651,2.651,0,0,1-3.743,0L46.839,27l1.871-1.872a2.647,2.647,0,1,1,3.743,3.744Z" class="lamp-star-path"></path><line x1="32" y1="7" x2="32" y2="11.422" style="fill:none;stroke:#4c241d;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px"></line><rect x="30" y="2.5" width="4" height="4" transform="translate(6.191 23.945) rotate(-45)" class="lamp-square"></rect><circle cx="55.239" cy="48.082" r="1.069" style="fill:#4c241d"></circle><circle cx="42.239" cy="51.082" r="1.069" style="fill:#4c241d"></circle></g></g></svg>`;
+        const lampColors = [
+          {
+            main: "#ffe5d2",
+            body: "#fc8c29",
+            small: "#ffce56",
+            star: "#bd53b5",
+            square: "#fc8c29",
+          },
+          {
+            main: "#FFD700",
+            body: "#FF6347",
+            small: "#FFA500",
+            star: "#8A2BE2",
+            square: "#00BFFF",
+          },
+          {
+            main: "#ADD8E6",
+            body: "#90EE90",
+            small: "#FFDAB9",
+            star: "#BA55D3",
+            square: "#00BFFF",
+          },
+          {
+            main: "#FFC0CB",
+            body: "#FF69B4",
+            small: "#FF1493",
+            star: "#FFD700",
+            square: "#FF8C00",
+          },
+          {
+            main: "#98FB98",
+            body: "#3CB371",
+            small: "#20B2AA",
+            star: "#6A5ACD",
+            square: "#00FA9A",
+          },
+          {
+            main: "#E6E6FA",
+            body: "#B0C4DE",
+            small: "#ADD8E6",
+            star: "#87CEEB",
+            square: "#6495ED",
+          },
+        ];
+        const renderLamps = () => {
+          lampsContainer.innerHTML = "";
+          const pathLength = arcPath.getTotalLength(),
+            containerWidth = $decoration.width(),
+            containerHeight = $decoration.height(),
+            arcViewBoxWidth = 1000,
+            arcViewBoxHeight = 150,
+            lampPxWidth = lampSize,
+            lampPxHeight = lampSize,
+            attachmentXInSvg = 32,
+            attachmentYInSvg = 10;
+          for (let i = 0; i < numberOfLamps; i++) {
+            const lampDiv = document.createElement("div");
+            lampDiv.innerHTML = fullSvgTemplate;
+            lampDiv.classList.add("lamp-glow", "absolute");
+            const color = lampColors[i % lampColors.length];
+            lampDiv.style.setProperty("--lamp-color-circle-bg", color.main);
+            lampDiv.style.setProperty("--lamp-color-body", color.body);
+            lampDiv.style.setProperty("--lamp-color-small-circle", color.small);
+            lampDiv.style.setProperty("--lamp-color-star-path", color.star);
+            lampDiv.style.setProperty("--lamp-color-square", color.square);
+            const positionRatio = (i + 0.5) / numberOfLamps;
+            const point = arcPath.getPointAtLength(positionRatio * pathLength);
+            lampDiv.style.left = `${
+              (point.x / arcViewBoxWidth) * containerWidth - lampPxWidth / 2
+            }px`;
+            lampDiv.style.top = `${
+              (point.y / arcViewBoxHeight) * containerHeight -
+              lampPxHeight * (attachmentYInSvg / 64)
+            }px`;
+            lampsContainer.appendChild(lampDiv);
+          }
+        };
+        window.addEventListener("resize", renderLamps);
+
+        // Special Message logic
+        // Special Message logic
+        // Special Message logic
+        window.showSpecialMessage = function () {
+          $("body").addClass("special-message-bg");
+          $(
+            ".container, .loading, canvas, #decoration-container, #bulb-row, .navbar-fixed-bottom"
+          ).hide();
+          $("#special-message-section").fadeIn(800, function () {
+            // Inject paragraphs
+            const paragraphs = [
+              "Kya gullu?",
+              "Aa gaya mere gullu ka birthdayyyyy!!",
+              "Happy birthday babu",
+              "Meri pyaari bacchi",
+              "I love you baby",
+              "Meri jaanu shonu monu babu",
+              "I love you sabse jyada",
+              "You are my everything babu",
+              "Keep smiling like this always",
+              "You're the best girlfriend",
+              "The best friend",
+              "The most loyal",
+              "Most supportive",
+              "Most caring",
+              "Most honest",
+              "Sweetest cutest baby everrrrr",
+              "I love you so much",
+              "I can't explain it in words",
+              "I want to give you the whole world",
+              "But here's a small present from me",
+              "Kaisa laga babu?",
+              "Ab ye mat bolna — 'rona aa raha hai'",
+              "Haan pata hai, wahi bolne wali ho",
+              "Lo bol lo...",
+            ];
+            const $container = $("#special-message-container");
+            $container.empty();
+            paragraphs.forEach((txt, i) => {
+              $container.append(
+                `<p class="special-message-paragraph">${txt}</p>`
+              );
+            });
+            let index = 0;
+            const $paras = $container.find(".special-message-paragraph");
+            const displayDelay = 4000;
+            function showNextParagraph() {
+              if (index > 0) $paras.eq(index - 1).removeClass("show");
+              if (index >= $paras.length) {
+                // Fade out the card
+                $(".special-message-card")
+                  .delay(1000)
+                  .fadeOut(800, function () {
+                    $("#love-you-btn").fadeIn(800);
+                  });
+                return;
+              }
+              $paras.eq(index).addClass("show");
+              index++;
+              setTimeout(showNextParagraph, displayDelay);
+            }
+            setTimeout(showNextParagraph, 500);
+          });
+          $("#love-you-btn").hide();
+          $("#final-message").hide();
+        };
+        // Love you button logic
+        $("#love-you-btn").on("click", function () {
+          $(this).fadeOut(500, function () {
+            $("#final-message").fadeIn(800);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
